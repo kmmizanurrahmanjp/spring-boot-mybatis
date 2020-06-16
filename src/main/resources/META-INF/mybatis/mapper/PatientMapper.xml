@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.mizan.mybatis.mapper.PatientMapper"><!--
+================================================================================
+PatientMapper.xml
+================================================================================
+@author    Md Mizanur Rahman<mizan@phaseminus.com>
+@version   0.0.1-SNAPSHOT
+@since     0.0.1-SNAPSHOT
+================================================================================
+--> <resultMap id="ResultMap" type="Patient">
+        <result property="patientId" column="id"/>
+        <result property="patientName" column="name"/>
+        <result property="patientAddress" column="address"/>
+        <result property="patientPhone" column="phone"/>
+    </resultMap>
+    
+    
+    <select id="countAll" resultType="java.lang.Integer">
+    	SELECT COUNT(*) FROM patient p
+    </select>
+    
+    <select id="countByParams" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(*) FROM patient p
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="patientId != null"> 
+				AND UPPER(p.id) LIKE UPPER(CONCAT(#{patientId},'%'))
+			</if>
+			 <if test="patientName != null"> 
+				AND UPPER(p.name) LIKE UPPER(CONCAT(#{patientName},'%'))
+			</if>
+			 <if test="patientAddress != null"> 
+				AND UPPER(p.address) LIKE UPPER(CONCAT(#{patientAddress},'%'))
+			</if>
+			 <if test="patientPhone != null"> 
+				AND UPPER(p.phone) LIKE UPPER(CONCAT(#{patientPhone},'%'))
+			</if>
+		</trim>
+    </select>
+    
+    
+    <select id="selectAll" resultMap="ResultMap"><![CDATA[
+        SELECT p.*
+        FROM patient p
+        WHERE 1=1
+    ]]>
+    </select>
+    
+    
+    <select id="selectById" resultMap="ResultMap" parameterType="java.lang.Integer"><![CDATA[
+        SELECT p.*
+        FROM patient p
+        WHERE p.id = #{id, jdbcType=INTEGER}
+    ]]>
+    </select>
+    
+    <select id="search" resultMap="ResultMap" parameterType="java.util.Map">
+        SELECT p.*
+        FROM patient p
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="patientId != null"> 
+            	AND UPPER(p.id) LIKE UPPER(CONCAT(#{patientId},'%'))
+           	</if>
+            <if test="patientName != null"> 
+            	AND UPPER(p.name) LIKE UPPER(CONCAT(#{patientName},'%'))
+           	</if>
+            <if test="patientAddress != null"> 
+            	AND UPPER(p.address) LIKE UPPER(CONCAT(#{patientAddress},'%'))
+           	</if>
+            <if test="patientPhone != null"> 
+            	AND UPPER(p.phone) LIKE UPPER(CONCAT(#{patientPhone},'%'))
+           	</if>
+        </trim>
+    </select>
+    
+    <insert id="insert" parameterType="Patient" useGeneratedKeys="true" keyColumn="id" keyProperty="patientId">
+        INSERT INTO patient (
+            name,
+            address,
+            phone
+        ) VALUES (
+            #{patientName, jdbcType=VARCHAR},
+            #{patientAddress, jdbcType=VARCHAR},
+            #{patientPhone, jdbcType=VARCHAR}
+        )
+    </insert>
+    
+    <update id="update" parameterType="Patient">
+        UPDATE patient
+        <set>
+            <if test="patientName !=null">name= #{patientName, jdbcType=VARCHAR},</if>
+            <if test="patientAddress !=null">address = #{patientAddress, jdbcType=VARCHAR},</if>
+            <if test="patientPhone !=null">phone= #{patientPhone, jdbcType=VARCHAR},</if>
+        </set>
+        WHERE id= #{patientId, jdbcType=INTEGER}
+    </update>
+    
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM patient
+        WHERE id = #{patientId, jdbcType=INTEGER}
+    </delete>
+</mapper>
